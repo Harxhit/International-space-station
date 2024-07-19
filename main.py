@@ -1,28 +1,56 @@
-from tkinter import *
 import requests
+import datetime as dt
+import smtplib
+import time
 
+# Location Constants
+LATITUDE = 22.7196
+LONGITUDE = 75.8577
 
-def get_quote():
-  response = requests.get(url="https://api.kanye.rest")
-  response.raise_for_status()
-  quote = response.json()["quote"]
-  canvas.itemconfig(quote_text , text = quote)
-  
+# Email Constants
+email = "harsxit04@gmail.com"
+password = "fkzd ghcg drzi odod"
 
-window = Tk()
-window.title("Kanye Says...")
-window.config(padx=50, pady=50)
+def iss_overhead():
+    response = requests.get(url="http://api.open-notify.org/iss-now.json")
+    response.raise_for_status()
+    data = response.json()
 
-canvas = Canvas(width=300, height=414)
-background_img = PhotoImage(file="C:\\Users\\Welcome\\OneDrive\\Desktop\\Python\\Mini Project\\API\\Kanye-Quote\\background.png")
-canvas.create_image(150, 207, image=background_img)
-quote_text = canvas.create_text(150, 207, text="Kanye Quote Goes HERE", width=250, font=("Arial", 30, "bold"), fill="white")
-canvas.grid(row=0, column=0)
+    iss_latitude = float(data["iss_position"]["latitude"])
+    iss_longitude = float(data["iss_position"]["longitude"])
 
-kanye_img = PhotoImage(file="C:\\Users\\Welcome\\OneDrive\\Desktop\\Python\\Mini Project\\API\\Kanye-Quote\\kanye.png")
-kanye_button = Button(image=kanye_img, highlightthickness=0, command=get_quote)
-kanye_button.grid(row=1, column=0)
+    if LATITUDE - 5 <= iss_latitude <= LATITUDE + 5 and LONGITUDE - 5 <= iss_longitude <= LONGITUDE + 5:
+        return True
+    return False
 
+def is_night():
+    parameters = {
+        "lat": LATITUDE,
+        "lng": LONGITUDE,
+        "formatted": 0,
+    }
 
+    response = requests.get(url="https://api.sunrise-sunset.org/json", params=parameters)
+    response.raise_for_status()
+    data = response.json()
 
-window.mainloop()
+    sunrise = int(data["results"]["sunrise"].split("T")[1].split(":")[0])
+    sunset = int(data["results"]["sunset"].split("T")[1].split(":")[0])
+
+    time_now = dt.datetime.now().hour
+
+    if time_now >= sunset or time_now <= sunrise:
+        return True
+    return False
+
+while True:
+    time.sleep(60)
+    if iss_overhead() and is_night():
+        with smtplib.SMTP("smtp.gmail.com") as connection:
+            connection.starttls()
+            connection.login(email, password)
+            connection.sendmail(
+                from_addr=email,
+                to_addrs=email,
+                msg="Subject:Look Up\n\nInternational Space Station is overhead, look up in the sky."
+            )
