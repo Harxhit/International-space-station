@@ -1,4 +1,8 @@
-# International Space Station Ovehead 
+[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
+[![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)](https://git-scm.com/)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/)
+
+# International Space Station Ovehead 🛰️
 ## Project Description:
 Developed a Python-based program that utilizes APIs to notify users via email when the International Space Station (ISS) is overhead during nighttime hours. The program leverages real-time data to provide accurate alerts, enhancing the user's stargazing experience.
 
